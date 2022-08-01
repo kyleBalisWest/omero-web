@@ -135,6 +135,8 @@
 
             <div>
                 <p style="min-height: 15px">
+                    <a href="{% url 'waforgottenpassword' %}">Login using SSO</a>
+                    <br />
 		    {% if show_forgot_password %}
 		        <a href="{% url 'waforgottenpassword' %}">Forgot your password?</a>
 		    {% endif %}
