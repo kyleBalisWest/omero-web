@@ -1,0 +1,118 @@
+{% extends "webgateway/core_html.html" %}
+{% load i18n %}
+
+{% comment %}
+<!--
+  Copyright (C) Glencoe Software, Inc - All Rights Reserved
+  Unauthorized copying of this file, via any medium is strictly prohibited
+  Proprietary and confidential
+  This software is distributed under the terms described by your
+  Software License Agreement (SWLA); please request a copy by
+  contacting info@glencoesoftware.com
+-->
+{% endcomment %}
+
+{% block link %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "webclient/css/layout.css"|add:url_suffix %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "webgateway/css/ome.alt_login.css"|add:url_suffix %}" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<div class="split left">
+    <div class="img-overlay">
+        <!-- <img class="overlay-logo" src="{% static "webclient/image/neo_logo_white.png" %}" /> -->
+        <div class="img-text">
+            Visualize and explore your image datasets
+        </div>
+    </div>
+    <img class="left-img" src="{% static "webclient/image/stock_path.jpeg" %}" />
+</div>
+<div class="split right">
+    <div id="login">
+        {% block login %}
+        <form class="standard_form inlined" action="{% url 'weblogin' %}{% if url %}?{{url}}{% endif %}" method="post">{% csrf_token %}
+            <img class="form-logo" src="{% static "webclient/image/NeoVUELogo.jpg" %}" />
+            {% if error %}
+                <span class="error">{% trans "Error:" %} {{ error | urlize }}</span>
+            {% endif %}
+            
+            <div id="choose_server">
+                    
+                    {% comment %}
+                    {% trans form.server.label_tag %}
+                    {% endcomment %}
+                    
+                        {{ form.server }}
+                
+                <!-- Form Error -->
+                {% if form.server.errors %}
+                        {% for error in form.server.errors %}
+                            <span class="form_error">{{ error|escape }}</span>
+                        {% endfor %}
+                {% endif %}
+            </div>
+    
+            <div>
+                {% trans form.username.label_tag %}
+                <!--{% if form.username.field.required %}*{% endif %} -->
+                {{ form.username }}
+                <!-- Form Error -->
+                {% if form.username.errors %}
+                    {% for error in form.username.errors %}
+                        <span class="form_error">{{ error|escape }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div>
+                {% trans form.password.label_tag %}
+                <!--{% if form.password.field.required %}*{% endif %}-->
+                {{ form.password }}
+                <!-- Form Error -->
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <span class="form_error">{{ error|escape }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+    
+            <input type="submit" value="Login" />
+    
+            <div>
+                <p style="min-height: 15px">
+            {% if show_forgot_password %}
+                <a href="{% url 'waforgottenpassword' %}">Forgot your password?</a>
+            {% endif %}
+                </p>
+            </div>
+    
+            {% if public_enabled %}
+                <hr class="login-divider"/>
+                <div class="login-link">
+                    <a class="login-link-text" href="{{ public_login_redirect }}">Log in as public user</a>
+                </div>
+            {% endif %}
+            <div id="login-footer">
+                <p>
+                    OMERO.web {{ version }}.<br/>
+                    &copy; 2007-{{ build_year }} University of Dundee &amp; Open Microscopy Environment<br/>
+                    OMERO is distributed under the terms of the GNU GPL.
+                    For more information, visit <a href="https://www.openmicroscopy.org">openmicroscopy.org</a><br/>
+            
+                    {% if show_download_links %}
+                        Download OMERO.insight for
+                        <a href="https://www.openmicroscopy.org/omero/downloads/" id="download-insight-mac">Mac OS X</a>,
+                        <a href="https://www.openmicroscopy.org/omero/downloads/" id="download-insight-win">Windows</a>,
+                        <a href="https://www.openmicroscopy.org/omero/downloads/" id="download-insight-linux">Linux</a><br>
+                    {% endif %}
+            
+                    <img src="{% static 'webgateway/img/powered_by_plus.png' %}" width="80%" style="margin-top: 10px;"/>
+                </p>
+            </div>
+        </form>
+    
+        {% endblock %}
+    </div>
+</div>
+{% endblock %}
