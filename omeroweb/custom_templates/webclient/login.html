@@ -3,36 +3,36 @@
 
 {% comment %}
 <!--
-  Copyright (C) Glencoe Software, Inc - All Rights Reserved
-  Unauthorized copying of this file, via any medium is strictly prohibited
-  Proprietary and confidential
-  This software is distributed under the terms described by your
-  Software License Agreement (SWLA); please request a copy by
-  contacting info@glencoesoftware.com
+    Copyright (C) Glencoe Software, Inc - All Rights Reserved
+
+    Unauthorized copying of this file, via any medium is strictly prohibited
+    Proprietary and confidential
+    This software is distributed under the terms described by your
+    Software License Agreement (SWLA); please request a copy by
+    contacting info@glencoesoftware.com
 -->
 {% endcomment %}
 
 {% block link %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static "webclient/css/layout.css"|add:url_suffix %}" type="text/css" />
-    <link rel="stylesheet" href="{% static "webgateway/css/ome.alt_login.css"|add:url_suffix %}" type="text/css" />
+    <link rel="stylesheet" href="{% static "custom_templates/css/alt_login.css"|add:url_suffix %}" type="text/css" />
 {% endblock %}
 
 {% block body %}
 <div class="split left">
     <div class="img-overlay">
-        <!-- <img class="overlay-logo" src="{% static "webclient/image/neo_logo_white.png" %}" /> -->
         <div class="img-text">
             Visualize and explore your image datasets
         </div>
     </div>
-    <img class="left-img" src="{% static "webclient/image/stock_path.jpeg" %}" />
+    <img class="left-img" src="{% static "custom_templates/image/stock_path.jpeg"|add:url_suffix %}" />
 </div>
 <div class="split right">
     <div id="login">
         {% block login %}
         <form class="standard_form inlined" action="{% url 'weblogin' %}{% if url %}?{{url}}{% endif %}" method="post">{% csrf_token %}
-            <img class="form-logo" src="{% static "webclient/image/NeoVUELogo.jpg" %}" />
+            <img class="form-logo" src="{% static "custom_templates/image/NeoVUELogo.jpg"|add:url_suffix %}" />
             {% if error %}
                 <span class="error">{% trans "Error:" %} {{ error | urlize }}</span>
             {% endif %}
@@ -107,7 +107,7 @@
                         <a href="https://www.openmicroscopy.org/omero/downloads/" id="download-insight-linux">Linux</a><br>
                     {% endif %}
             
-                    <img src="{% static 'webgateway/img/powered_by_plus.png' %}" width="80%" style="margin-top: 10px;"/>
+                    <img src="{% static "custom_templates/image/powered_by_plus.png"|add:url_suffix %}" width="80%" style="margin-top: 10px;"/>
                 </p>
             </div>
         </form>
