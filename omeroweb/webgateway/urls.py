@@ -71,6 +71,13 @@ object_table_query = url(
     views.object_table_query,
     name="webgateway_object_table_query",
 )
+
+table_query_in_memory = url(
+    r"^imtable/(?P<fileid>\d+)/query/$",
+    views.table_query_in_memory,
+    name="webgateway_table_query_in_memory"
+)
+
 """
 Query bulk annotations table attached to an object specified by
 object type and identifier, optionally traversing object model graph.
@@ -615,6 +622,7 @@ urlpatterns = [
     # bulk annotations
     annotations,
     table_query,
+    table_query_in_memory,
     table_metadata,
     table_obj_id_bitmask,
     object_table_query,

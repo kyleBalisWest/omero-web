@@ -13,14 +13,17 @@
 #
 # Author: Carlos Neves <carlos(at)glencoesoftware.com>
 
+from distutils.sysconfig import customize_compiler
 import re
 import json
 import base64
+from venv import create
 import warnings
 from functools import wraps
 import omero
 import omero.clients
 from past.builtins import unicode
+import sqlite3
 
 from django.http import (
     HttpResponse,
@@ -3075,6 +3078,49 @@ def _table_query(request, fileid, conn=None, query=None, lazy=False, **kwargs):
 
 table_query = login_required()(jsonp(_table_query))
 
+@login_required()
+def table_query_in_memory(request, fileid, conn=None, query=None, lazy=False, **kwargs):
+    tableData = table_query(request, fileid)
+    
+    in_memory = sqlite3.connect(':memory:')
+    cursor = in_memory.cursor()
+
+    for obj in tableData:
+        objData = json.loads(obj)['data']
+        columns = objData['columns']
+        column_types = objData['column_types']
+        createTableQuery = ''
+        valueQuery = ''
+        for index, col in enumerate(columns):
+            if column_types[index] == 'DoubleColumn':
+                createTableQuery += f'"{col}" REAL'
+            else:
+                createTableQuery += f'"{col}" TEXT'
+            if index != len(columns) - 1:
+                valueQuery += '?,'
+                createTableQuery += ', '
+            else:
+                valueQuery += '?'
+        cursor.execute('create table results (' + createTableQuery + ')')
+
+        for row in objData['rows']:
+            keys = tuple(row[index] for index, c in enumerate(columns))
+            cursor.execute(f'insert into results values({valueQuery})', keys)
+        # cursor.execute('select * from results')
+        # memory_data = cursor.fetchall()
+        # memory_data = '\n'.join(memory_data)
+        temp = tempfile.NamedTemporaryFile(suffix=".table_data")
+        for line in in_memory.iterdump():
+            temp.write(line.encode('utf-8'))
+        # temp.write(memory_data)
+        rsp = StreamingHttpResponse(FileWrapper(temp))
+        rsp["Content-Length"] = temp.tell()
+        rsp["Content-Disposition"] = "attachment; filename=%s" % temp.name
+        temp.seek(0)
+
+    rsp["Content-Type"] = "application/force-download"
+    print(rsp)
+    return tableData
 
 def _table_metadata(request, fileid, conn=None, query=None, lazy=False, **kwargs):
     ctx = conn.createServiceOptsDict()
